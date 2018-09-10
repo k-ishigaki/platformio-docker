@@ -4,6 +4,7 @@ MAINTAINER k-ishigaki <k-ishigaki@frontier.hokudai.ac.jp>
 RUN apt-get update && apt-get install -y \
     build-essential \
     curl \
+    git \
     make \
     python-dev \
     python-pip \
