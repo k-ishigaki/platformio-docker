@@ -4,11 +4,11 @@ LABEL maintainer="Kazuki Ishigaki<k-ishigaki@frontier.hokudai.ac.jp>"
 RUN apt-get update && apt-get install -y \
     build-essential \
     curl \
-    git \
-    make \
-    python-dev \
-    python-pip \
-    && apt-get clean
+    python3-dev \
+    python3-pip \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # install platformio
-RUN python -c "$(curl -fsSL https://raw.githubusercontent.com/platformio/platformio/develop/scripts/get-platformio.py)"
+RUN pip3 install -U platformio
+
+ENV PATH=$PATH:/root/.platformio/penv/bin
