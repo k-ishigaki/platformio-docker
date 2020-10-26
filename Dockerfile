@@ -6,20 +6,21 @@ RUN apt-get update && apt-get install -y \
     curl \
     python3-dev \
     python3-pip \
+    sudo \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # install platformio
 RUN pip3 install -U platformio
 
 ENV PATH=$PATH:/root/.platformio/penv/bin
-# Add a normal user
-ENV USER_ID 0
-ENV GROUP_ID 0
-RUN { \
+
+RUN echo "developer ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers.d/developer && \
+    chmod u+s `which groupadd` `which useradd` && \
+    { \
     echo '#!/bin/sh -e'; \
-    echo 'chown -f --recursive ${USER_ID}:${GROUP_ID} /root'; \
-    echo 'getent group ${GROUP_ID} || addgroup -q --gid ${GROUP_ID} group'; \
-    echo 'getent passwd ${USER_ID} || adduser -q --home /root --uid ${USER_ID} --gid ${GROUP_ID} --disabled-login user'; \
-    echo '"$@"'; \
+    echo 'getent group `id -g` || groupadd --gid `id -g` developer'; \
+    echo 'getent passwd `id -u` || useradd --uid `id -u` --gid `id -g` --home-dir /root developer'; \
+    echo 'sudo chown --recursive `id -u`:`id -g` /root'; \
+    echo 'exec "$@"'; \
     } > /entrypoint && chmod +x /entrypoint
 ENTRYPOINT [ "/entrypoint" ]
